@@ -1,0 +1,14 @@
+package com.api.jobstracker.servicios;
+
+import com.api.jobstracker.dominio.dto.PostulacionRespuesta;
+import com.api.jobstracker.dominio.dto.PostulacionSolicitud;
+import com.api.jobstracker.dominio.modelo.Postulaciones;
+
+import java.util.List;
+
+public interface PostulacionesServicio {
+    void agregarPostulacion(PostulacionSolicitud postulacionSolicitud);
+    List<PostulacionRespuesta> listarPostulaciones();
+    void eliminarPostulacion(Integer postulacionId);
+
+}

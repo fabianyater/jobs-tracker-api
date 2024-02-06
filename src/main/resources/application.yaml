@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: "Jobs Tracker API"
+  profiles:
+    active: dev
+  jpa:
+    database: postgresql
+    show-sql: true
+    hibernate:
+      format_sql: true
+      dialect: org.hibernate.dialect.PostgreSQL10Dialect
+      ddl-auto: update
+
+---
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/myjobs
+    username: postgres
+    password: postgres
+  config:
+    activate:
+      on-profile: dev
