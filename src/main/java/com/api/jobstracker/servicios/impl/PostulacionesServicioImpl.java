@@ -1,5 +1,6 @@
 package com.api.jobstracker.servicios.impl;
 
+import com.api.jobstracker.dominio.dto.EstadoSolicitud;
 import com.api.jobstracker.dominio.dto.PostulacionRespuesta;
 import com.api.jobstracker.dominio.dto.PostulacionSolicitud;
 import com.api.jobstracker.dominio.modelo.Empresa;
@@ -83,13 +84,24 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
         postulacionRepositorio.delete(postulacion);
 
         // Verificar y eliminar la empresa si no tiene otras postulaciones
-        if(postulacionRepositorio.findByEmpresa_Id(empresaId).isEmpty()) {
+        if (postulacionRepositorio.findByEmpresa_Id(empresaId).isEmpty()) {
             empresaRepositorio.deleteById(empresaId);
         }
 
         // Verificar y eliminar el puesto si no tiene otras postulaciones
-        if(postulacionRepositorio.findByPuesto_Id(puestoId).isEmpty()) {
+        if (postulacionRepositorio.findByPuesto_Id(puestoId).isEmpty()) {
             puestoRepositorio.deleteById(puestoId);
+        }
+    }
+
+    @Override
+    public void actualizarEstado(Integer id, EstadoSolicitud estado) {
+        Postulaciones postulacion = postulacionRepositorio.findById(id)
+                .orElseThrow(() -> new RuntimeException("Postulación no encontrada con el id: " + id));
+
+        if (!postulacion.getEstado().equals(estado.getEstado())) {
+            postulacion.setEstado(estado.getEstado());
+            postulacionRepositorio.save(postulacion);
         }
     }
 }

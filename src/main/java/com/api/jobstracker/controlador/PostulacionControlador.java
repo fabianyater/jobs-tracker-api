@@ -1,5 +1,6 @@
 package com.api.jobstracker.controlador;
 
+import com.api.jobstracker.dominio.dto.EstadoSolicitud;
 import com.api.jobstracker.dominio.dto.PostulacionRespuesta;
 import com.api.jobstracker.dominio.dto.PostulacionSolicitud;
 import com.api.jobstracker.dominio.modelo.ApiRespuesta;
@@ -33,6 +34,14 @@ public class PostulacionControlador {
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiRespuesta<Void>> eliminarPostulacion(@PathVariable("id") Integer id) {
         postulacionesServicio.eliminarPostulacion(id);
+
+        ApiRespuesta<Void> respuesta = ApiRespuesta.ok(null);
+        return new ResponseEntity<>(respuesta, respuesta.getStatus());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiRespuesta<Void>> actualizarEstado(@PathVariable("id") Integer id, @RequestBody EstadoSolicitud estadoSolicitud) {
+        postulacionesServicio.actualizarEstado(id, estadoSolicitud);
 
         ApiRespuesta<Void> respuesta = ApiRespuesta.ok(null);
         return new ResponseEntity<>(respuesta, respuesta.getStatus());
