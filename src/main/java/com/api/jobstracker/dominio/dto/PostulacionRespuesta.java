@@ -1,5 +1,6 @@
 package com.api.jobstracker.dominio.dto;
 
+import com.api.jobstracker.dominio.modelo.Estado;
 import lombok.Getter;
 import lombok.Setter;
 

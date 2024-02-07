@@ -9,4 +9,5 @@ public class PostulacionSolicitud {
     private String nombreEmpresa;
     private String url;
     private String tituloPuesto;
+    private String estado;
 }

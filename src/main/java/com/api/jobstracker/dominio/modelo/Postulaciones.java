@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -16,13 +18,8 @@ public class Postulaciones {
     @Column(name = "id_postulacion", nullable = false)
     private Integer id;
 
-
-
     @Column(name = "fecha_postulacion")
     private LocalDate fechaPostulacion;
-
-    @Column(name = "estado", length = 100)
-    private String estado;
 
     @Column(name = "notas", length = Integer.MAX_VALUE)
     private String notas;
@@ -37,5 +34,4 @@ public class Postulaciones {
     @ManyToOne
     @JoinColumn(name = "empresa_id_empresa")
     private Empresa empresa;
-
 }
