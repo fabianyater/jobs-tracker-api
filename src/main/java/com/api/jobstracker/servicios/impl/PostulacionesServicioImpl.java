@@ -80,15 +80,12 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
         Integer empresaId = postulacion.getEmpresa().getId();
         Integer puestoId = postulacion.getPuesto().getId();
 
-        // Eliminar la postulación
         postulacionRepositorio.delete(postulacion);
 
-        // Verificar y eliminar la empresa si no tiene otras postulaciones
         if (postulacionRepositorio.findByEmpresa_Id(empresaId).isEmpty()) {
             empresaRepositorio.deleteById(empresaId);
         }
 
-        // Verificar y eliminar el puesto si no tiene otras postulaciones
         if (postulacionRepositorio.findByPuesto_Id(puestoId).isEmpty()) {
             puestoRepositorio.deleteById(puestoId);
         }
