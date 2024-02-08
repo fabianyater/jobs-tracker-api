@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -71,11 +72,14 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
         List<Postulaciones> postulaciones = postulacionRepositorio.findAll();
         List<PostulacionesEstado> postulacionesEstado = postulacionEstadoRepositorio.findAll();
         Map<Integer, String> postulacionEstados = new HashMap<>();
+        Map<Integer, LocalDate> fechaActualizacionEstados = new HashMap<>();
 
         postulacionesEstado.forEach(pe -> {
             Estado estado = estadoRepositorio.findById(pe.getEstadosEstado().getId()).orElse(null);
+
             if (estado != null) {
                 postulacionEstados.put(pe.getPostulacionesIdPostulacion().getId(), estado.getEstado());
+                fechaActualizacionEstados.put(pe.getPostulacionesIdPostulacion().getId(), pe.getFechaActualizacion());
             }
         });
 
@@ -87,6 +91,7 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
             dto.setTituloPuesto(postulacion.getPuesto().getTitulo());
             dto.setNombreEmpresa(postulacion.getEmpresa().getNombre());
             dto.setEstado(postulacionEstados.get(postulacion.getId()));
+            dto.setFechaActualizacion(fechaActualizacionEstados.get(postulacion.getId()));
             return dto;
         }).toList();
     }
@@ -117,10 +122,10 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
 
         Estado estadoId = estadoRepositorio.findByEstado(estado.getEstado());
 
-        PostulacionesEstado postulacionesEstado = postulacionEstadoRepositorio
-                .findByPostulacionesIdPostulacion_Id(postulacion.getId());
-
+        PostulacionesEstado postulacionesEstado = new PostulacionesEstado();
+        postulacionesEstado.setPostulacionesIdPostulacion(postulacion);
         postulacionesEstado.setEstadosEstado(estadoId);
+        postulacionesEstado.setFechaActualizacion(LocalDate.now());
 
         postulacionEstadoRepositorio.save(postulacionesEstado);
     }

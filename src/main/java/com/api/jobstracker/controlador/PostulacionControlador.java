@@ -39,7 +39,7 @@ public class PostulacionControlador {
         return new ResponseEntity<>(respuesta, respuesta.getStatus());
     }
 
-    @PutMapping("/{id}")
+    @PostMapping("/{id}")
     public ResponseEntity<ApiRespuesta<Void>> actualizarEstado(@PathVariable("id") Integer id, @RequestBody EstadoSolicitud estadoSolicitud) {
         postulacionesServicio.actualizarEstado(id, estadoSolicitud);
 
