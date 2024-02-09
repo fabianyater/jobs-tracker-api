@@ -18,7 +18,7 @@ public class PostulacionesEstado {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "postulaciones_id_postulacion", nullable = false)
-    private Postulaciones postulacionesIdPostulacion;
+    private Postulacion postulacionIdPostulacion;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "estados_estado_id", nullable = false)

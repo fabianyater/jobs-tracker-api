@@ -1,20 +1,19 @@
 package com.api.jobstracker.servicios.impl;
 
+import com.api.jobstracker.dominio.dto.ComentarioRespuesta;
 import com.api.jobstracker.dominio.dto.EstadoSolicitud;
 import com.api.jobstracker.dominio.dto.PostulacionRespuesta;
 import com.api.jobstracker.dominio.dto.PostulacionSolicitud;
 import com.api.jobstracker.dominio.modelo.*;
 import com.api.jobstracker.repositorios.*;
+import com.api.jobstracker.servicios.ComentarioServicio;
 import com.api.jobstracker.servicios.PostulacionesServicio;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +25,7 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
     private final PostulacionRepositorio postulacionRepositorio;
     private final PostulacionEstadoRepositorio postulacionEstadoRepositorio;
     private final EstadoRepositorio estadoRepositorio;
+    private final ComentarioRepositorio comentarioRepositorio;
 
     @Override
     public void agregarPostulacion(PostulacionSolicitud postulacionSolicitud) {
@@ -50,7 +50,7 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
 
         Estado estado = estadoRepositorio.findById(1).orElseThrow(() -> new RuntimeException("Estado no encontrado"));
 
-        Postulaciones postulacion = new Postulaciones();
+        Postulacion postulacion = new Postulacion();
 
         postulacion.setEmpresa(empresa);
         postulacion.setPuesto(puesto);
@@ -61,7 +61,7 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
 
         PostulacionesEstado postulacionesEstado = new PostulacionesEstado();
         postulacionesEstado.setEstadosEstado(estado);
-        postulacionesEstado.setPostulacionesIdPostulacion(postulacion);
+        postulacionesEstado.setPostulacionIdPostulacion(postulacion);
         postulacionesEstado.setFechaActualizacion(LocalDate.now());
 
         postulacionEstadoRepositorio.save(postulacionesEstado);
@@ -69,8 +69,9 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
 
     @Override
     public List<PostulacionRespuesta> listarPostulaciones() {
-        List<Postulaciones> postulaciones = postulacionRepositorio.findAll();
+        List<Postulacion> postulaciones = postulacionRepositorio.findAll();
         List<PostulacionesEstado> postulacionesEstado = postulacionEstadoRepositorio.findAll();
+        List<Comentario> comentarios = comentarioRepositorio.findAll();
         Map<Integer, String> postulacionEstados = new HashMap<>();
         Map<Integer, LocalDate> fechaActualizacionEstados = new HashMap<>();
 
@@ -78,8 +79,8 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
             Estado estado = estadoRepositorio.findById(pe.getEstadosEstado().getId()).orElse(null);
 
             if (estado != null) {
-                postulacionEstados.put(pe.getPostulacionesIdPostulacion().getId(), estado.getEstado());
-                fechaActualizacionEstados.put(pe.getPostulacionesIdPostulacion().getId(), pe.getFechaActualizacion());
+                postulacionEstados.put(pe.getPostulacionIdPostulacion().getId(), estado.getEstado());
+                fechaActualizacionEstados.put(pe.getPostulacionIdPostulacion().getId(), pe.getFechaActualizacion());
             }
         });
 
@@ -92,13 +93,20 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
             dto.setNombreEmpresa(postulacion.getEmpresa().getNombre());
             dto.setEstado(postulacionEstados.get(postulacion.getId()));
             dto.setFechaActualizacion(fechaActualizacionEstados.get(postulacion.getId()));
+
+            List<ComentarioRespuesta> comentariosFiltrados = comentarios.stream()
+                    .filter(comentario -> comentario.getPostulacion().getId().equals(postulacion.getId()))
+                    .map(comentario -> new ComentarioRespuesta(comentario.getComentario()))
+                    .collect(Collectors.toList());
+
+            dto.setComentarios(comentariosFiltrados);
             return dto;
         }).toList();
     }
 
     @Override
     public void eliminarPostulacion(Integer postulacionId) {
-        Postulaciones postulacion = postulacionRepositorio.findById(postulacionId)
+        Postulacion postulacion = postulacionRepositorio.findById(postulacionId)
                 .orElseThrow(() -> new RuntimeException("Postulación no encontrada con el id: " + postulacionId));
 
         Integer empresaId = postulacion.getEmpresa().getId();
@@ -117,13 +125,13 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
 
     @Override
     public void actualizarEstado(Integer id, EstadoSolicitud estado) {
-        Postulaciones postulacion = postulacionRepositorio.findById(id)
+        Postulacion postulacion = postulacionRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Postulación no encontrada con el id: " + id));
 
         Estado estadoId = estadoRepositorio.findByEstado(estado.getEstado());
 
         PostulacionesEstado postulacionesEstado = new PostulacionesEstado();
-        postulacionesEstado.setPostulacionesIdPostulacion(postulacion);
+        postulacionesEstado.setPostulacionIdPostulacion(postulacion);
         postulacionesEstado.setEstadosEstado(estadoId);
         postulacionesEstado.setFechaActualizacion(LocalDate.now());
 

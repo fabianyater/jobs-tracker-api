@@ -1,11 +1,11 @@
 package com.api.jobstracker.dominio.dto;
 
-import com.api.jobstracker.dominio.modelo.Estado;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 
 @Getter
@@ -17,7 +17,7 @@ public class PostulacionRespuesta {
     private String nombreEmpresa;
     private String fechaPostulacion;
     private LocalDate fechaActualizacion;
-    private String notas;
+    private List<ComentarioRespuesta> comentarios;
     private String estado;
 
     public void setFechaPostulacion(LocalDate fecha) {

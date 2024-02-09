@@ -5,14 +5,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "postulaciones")
-public class Postulaciones {
+public class Postulacion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_postulacion", nullable = false)
@@ -20,9 +18,6 @@ public class Postulaciones {
 
     @Column(name = "fecha_postulacion")
     private LocalDate fechaPostulacion;
-
-    @Column(name = "notas", length = Integer.MAX_VALUE)
-    private String notas;
 
     @Column(name = "url")
     private String url;
