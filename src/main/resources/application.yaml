@@ -10,9 +10,8 @@ spring:
     database: postgresql
     show-sql: true
     hibernate:
-      format_sql: true
-      dialect: org.hibernate.dialect.PostgreSQL10Dialect
       ddl-auto: update
+    open-in-view: false
 
 ---
 
