@@ -99,6 +99,7 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
                             .collect(Collectors.toList());
 
                     dto.setComentarios(comentariosFiltrados);
+                    dto.setDescripcion(postulacion.getDescripcion());
                     return dto;
                 })
                 .sorted((p1, p2) -> p2.getFechaActualizacion().compareTo(p1.getFechaActualizacion()))

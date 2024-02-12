@@ -20,6 +20,7 @@ public class PostulacionRespuesta {
     private String fechaActualizacion;
     private List<ComentarioRespuesta> comentarios;
     private String estado;
+    private String descripcion;
 
     public void setFechaPostulacion(LocalDate fecha) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", new Locale("es", "ES"));

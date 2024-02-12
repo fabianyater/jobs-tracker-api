@@ -22,6 +22,9 @@ public class Postulacion {
     @Column(name = "url")
     private String url;
 
+    @Column(name = "descpription", columnDefinition = "text")
+    private String descripcion;
+
     @ManyToOne
     @JoinColumn(name = "puesto_id_puesto")
     private Puesto puesto;
