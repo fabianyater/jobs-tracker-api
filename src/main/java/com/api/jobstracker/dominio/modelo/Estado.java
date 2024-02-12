@@ -20,6 +20,9 @@ public class Estado {
     @Column(name = "estado")
     private String estado;
 
+    @Column(name = "color")
+    private String color;
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -16,12 +17,17 @@ public class PostulacionRespuesta {
     private String tituloPuesto;
     private String nombreEmpresa;
     private String fechaPostulacion;
-    private LocalDate fechaActualizacion;
+    private String fechaActualizacion;
     private List<ComentarioRespuesta> comentarios;
     private String estado;
 
     public void setFechaPostulacion(LocalDate fecha) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
         this.fechaPostulacion = fecha.format(formatter);
+    }
+
+    public void setFechaPostulacion(LocalDateTime fecha) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
+        this.fechaActualizacion = fecha.format(formatter);
     }
 }

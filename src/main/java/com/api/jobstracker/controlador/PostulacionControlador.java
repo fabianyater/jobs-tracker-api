@@ -2,6 +2,7 @@ package com.api.jobstracker.controlador;
 
 import com.api.jobstracker.dominio.dto.EstadoSolicitud;
 import com.api.jobstracker.dominio.dto.PostulacionRespuesta;
+import com.api.jobstracker.dominio.dto.PostulacionRespuestaPaginada;
 import com.api.jobstracker.dominio.dto.PostulacionSolicitud;
 import com.api.jobstracker.dominio.modelo.ApiRespuesta;
 import com.api.jobstracker.servicios.PostulacionesServicio;
@@ -24,10 +25,12 @@ public class PostulacionControlador {
         return new ResponseEntity<>(apiRespuesta, apiRespuesta.getStatus());
     }
 
-    @GetMapping
-    public ResponseEntity<ApiRespuesta<List<PostulacionRespuesta>>> listarTodas() {
-        List<PostulacionRespuesta> postulaciones = postulacionesServicio.listarPostulaciones();
-        ApiRespuesta<List<PostulacionRespuesta>> respuesta = ApiRespuesta.ok(postulaciones);
+    @GetMapping()
+    public ResponseEntity<ApiRespuesta<PostulacionRespuestaPaginada>> listarTodas(
+            @RequestParam(value = "page") int currentPage,
+            @RequestParam("items") int itemsPerPage) {
+        PostulacionRespuestaPaginada postulacionesPaginadas = postulacionesServicio.listarPostulaciones(currentPage, itemsPerPage);
+        ApiRespuesta<PostulacionRespuestaPaginada> respuesta = ApiRespuesta.ok(postulacionesPaginadas);
         return new ResponseEntity<>(respuesta, respuesta.getStatus());
     }
 
