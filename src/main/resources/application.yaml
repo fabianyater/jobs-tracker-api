@@ -24,6 +24,7 @@ spring:
   config:
     activate:
       on-profile: dev
+    use-legacy-processing: true
 
 ---
 
