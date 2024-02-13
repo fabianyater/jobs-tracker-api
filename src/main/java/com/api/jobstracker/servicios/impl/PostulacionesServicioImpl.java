@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -82,6 +83,8 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
             }
         });
 
+
+
         List<PostulacionRespuesta> postulacionRespuestas = postulaciones.stream()
                 .map(postulacion -> {
                     PostulacionRespuesta dto = new PostulacionRespuesta();
@@ -153,5 +156,27 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
         postulacionesEstado.setFechaActualizacion(LocalDateTime.now());
 
         postulacionEstadoRepositorio.save(postulacionesEstado);
+    }
+
+    @Override
+    public List<PostulacionTimelineRespuesta> obtenerPostulacionesTimeline(Integer postulacionId) {
+        List<Object[]> resultados = postulacionRepositorio.findEstadosByPostulacionId(postulacionId);
+        List<PostulacionTimelineRespuesta> timelineRespuestas = new ArrayList<>();
+
+        for(Object[] resultado : resultados) {
+            PostulacionTimelineRespuesta dto = new PostulacionTimelineRespuesta();
+            dto.setEstado((String) resultado[0]);
+
+            Timestamp timestamp = (Timestamp) resultado[1];
+            dto.setFechaActualizacion(timestamp.toLocalDateTime().toString());
+            dto.setColor(resultado[2].toString());
+
+            timelineRespuestas.add(dto);
+        }
+
+        return timelineRespuestas
+                .stream()
+                .sorted((o1, o2) -> o2.getFechaActualizacion().compareTo(o1.getFechaActualizacion()))
+                .toList();
     }
 }

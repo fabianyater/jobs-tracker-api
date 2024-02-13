@@ -1,9 +1,6 @@
 package com.api.jobstracker.controlador;
 
-import com.api.jobstracker.dominio.dto.EstadoSolicitud;
-import com.api.jobstracker.dominio.dto.PostulacionRespuesta;
-import com.api.jobstracker.dominio.dto.PostulacionRespuestaPaginada;
-import com.api.jobstracker.dominio.dto.PostulacionSolicitud;
+import com.api.jobstracker.dominio.dto.*;
 import com.api.jobstracker.dominio.modelo.ApiRespuesta;
 import com.api.jobstracker.servicios.PostulacionesServicio;
 import lombok.AllArgsConstructor;
@@ -47,6 +44,14 @@ public class PostulacionControlador {
         postulacionesServicio.actualizarEstado(id, estadoSolicitud);
 
         ApiRespuesta<Void> respuesta = ApiRespuesta.ok(null);
+        return new ResponseEntity<>(respuesta, respuesta.getStatus());
+    }
+
+    @GetMapping("/timeline/{id}")
+    public ResponseEntity<ApiRespuesta<List<PostulacionTimelineRespuesta>>> listarTimeline(@PathVariable("id") int id) {
+        List<PostulacionTimelineRespuesta>  postulacionTimelineRespuestas = postulacionesServicio.obtenerPostulacionesTimeline(id);
+        ApiRespuesta<List<PostulacionTimelineRespuesta>> respuesta = ApiRespuesta.ok(postulacionTimelineRespuestas);
+
         return new ResponseEntity<>(respuesta, respuesta.getStatus());
     }
 }
