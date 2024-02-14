@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -17,7 +18,7 @@ public class Postulacion {
     private Integer id;
 
     @Column(name = "fecha_postulacion")
-    private LocalDate fechaPostulacion;
+    private LocalDateTime fechaPostulacion;
 
     @Column(name = "url")
     private String url;

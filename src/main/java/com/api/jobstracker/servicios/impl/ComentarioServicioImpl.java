@@ -45,6 +45,10 @@ public class ComentarioServicioImpl implements ComentarioServicio {
         return comentarios.stream()
                 .filter(comentario -> comentario.getPostulacion().getId().equals(postulacionId))
                 .map(comentario -> {
+                    if (comentario.getFechaPublicacion() == null) {
+                        throw new RuntimeException("La fecha de publicación no puede ser nula");
+                    }
+
                     ComentarioRespuesta comentarioRespuesta = new ComentarioRespuesta();
                     comentarioRespuesta.setComentario(comentario.getComentario());
                     comentarioRespuesta.setFechaPublicacion(comentario.getFechaPublicacion().toString());

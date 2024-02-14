@@ -3,12 +3,6 @@ package com.api.jobstracker.dominio.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Locale;
-
 @Getter
 @Setter
 public class PostulacionRespuesta {
@@ -20,14 +14,4 @@ public class PostulacionRespuesta {
     private String fechaActualizacion;
     private String estado;
     private String descripcion;
-
-    public void setFechaPostulacion(LocalDate fecha) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
-        this.fechaPostulacion = fecha.format(formatter);
-    }
-
-    public void setFechaPostulacion(LocalDateTime fecha) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
-        this.fechaActualizacion = fecha.format(formatter);
-    }
 }

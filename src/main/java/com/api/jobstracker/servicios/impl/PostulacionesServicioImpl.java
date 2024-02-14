@@ -9,10 +9,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -50,17 +50,20 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
 
         Postulacion postulacion = new Postulacion();
 
+        LocalDateTime fechaActualizacion = ZonedDateTime.now(ZoneId.of("America/Bogota")).toLocalDateTime();
+        LocalDateTime fechaPostulacion = ZonedDateTime.now(ZoneId.of("America/Bogota")).toLocalDateTime();
+
         postulacion.setEmpresa(empresa);
         postulacion.setPuesto(puesto);
         postulacion.setUrl(url);
-        postulacion.setFechaPostulacion(LocalDate.now());
+        postulacion.setFechaPostulacion(fechaPostulacion);
 
         postulacionRepositorio.save(postulacion);
 
         PostulacionesEstado postulacionesEstado = new PostulacionesEstado();
         postulacionesEstado.setEstadosEstado(estado);
         postulacionesEstado.setPostulacionIdPostulacion(postulacion);
-        postulacionesEstado.setFechaActualizacion(LocalDateTime.now());
+        postulacionesEstado.setFechaActualizacion(fechaActualizacion);
 
         postulacionEstadoRepositorio.save(postulacionesEstado);
     }
@@ -70,7 +73,6 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
         PostulacionRespuestaPaginada postulacionRespuestaPaginada = new PostulacionRespuestaPaginada();
         List<Postulacion> postulaciones = postulacionRepositorio.findAll();
         List<PostulacionesEstado> postulacionesEstado = postulacionEstadoRepositorio.findAll();
-        List<Comentario> comentarios = comentarioRepositorio.findAll();
         Map<Integer, String> postulacionEstados = new HashMap<>();
         Map<Integer, LocalDateTime> fechaActualizacionEstados = new HashMap<>();
 
@@ -89,7 +91,7 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
                 .map(postulacion -> {
                     PostulacionRespuesta dto = new PostulacionRespuesta();
                     dto.setId(postulacion.getId());
-                    dto.setFechaPostulacion(postulacion.getFechaPostulacion());
+                    dto.setFechaPostulacion(postulacion.getFechaPostulacion().toString());
                     dto.setUrl(postulacion.getUrl());
                     dto.setTituloPuesto(postulacion.getPuesto().getTitulo());
                     dto.setNombreEmpresa(postulacion.getEmpresa().getNombre());
