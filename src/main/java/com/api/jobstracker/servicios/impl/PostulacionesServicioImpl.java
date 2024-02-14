@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 @Service
@@ -50,10 +49,11 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
 
         Postulacion postulacion = new Postulacion();
 
-        LocalDateTime fechaActualizacion = ZonedDateTime.now(ZoneId.of("America/Bogota"))
-                .withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime();
-        LocalDateTime fechaPostulacion = ZonedDateTime.now(ZoneId.of("America/Bogota"))
-                .withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime();
+        ZoneOffset bogotaOffset = ZoneOffset.ofHours(-5);
+
+        LocalDateTime fechaActualizacion = LocalDateTime.now(bogotaOffset);
+        LocalDateTime fechaPostulacion = LocalDateTime.now(bogotaOffset);
+
 
         postulacion.setEmpresa(empresa);
         postulacion.setPuesto(puesto);

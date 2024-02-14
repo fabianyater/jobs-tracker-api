@@ -8,7 +8,6 @@ spring:
     active: prod
   jpa:
     database: postgresql
-    show-sql: true
     hibernate:
       ddl-auto: update
     open-in-view: false
