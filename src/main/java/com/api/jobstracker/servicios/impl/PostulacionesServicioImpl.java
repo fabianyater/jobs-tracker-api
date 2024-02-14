@@ -6,6 +6,8 @@ import com.api.jobstracker.repositorios.*;
 import com.api.jobstracker.servicios.PostulacionesServicio;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
@@ -15,12 +17,13 @@ import java.util.*;
 @Transactional
 @AllArgsConstructor
 public class PostulacionesServicioImpl implements PostulacionesServicio {
+    private static final Logger logger = LoggerFactory.getLogger(PostulacionesServicioImpl.class);
     private final EmpresaRepositorio empresaRepositorio;
     private final PuestoRepositorio puestoRepositorio;
     private final PostulacionRepositorio postulacionRepositorio;
     private final PostulacionEstadoRepositorio postulacionEstadoRepositorio;
     private final EstadoRepositorio estadoRepositorio;
-    private final ComentarioRepositorio comentarioRepositorio;
+
 
     @Override
     public void agregarPostulacion(PostulacionSolicitud postulacionSolicitud) {
@@ -155,17 +158,50 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
 
     @Override
     public List<PostulacionTimelineRespuesta> obtenerPostulacionesTimeline(Integer postulacionId) {
+        if (postulacionId == null) {
+            logger.error("El ID de postulación es nulo");
+            return Collections.emptyList(); // Retorna una lista vacía o maneja el error como prefieras
+        }
+
         List<Object[]> resultados = postulacionRepositorio.findEstadosByPostulacionId(postulacionId);
+
+        if (resultados.isEmpty()) {
+            logger.warn("No se encontraron estados para la postulación con ID: {}", postulacionId);
+            return Collections.emptyList(); // Igualmente, puedes decidir cómo manejar esta situación
+        }
+
         List<PostulacionTimelineRespuesta> timelineRespuestas = new ArrayList<>();
 
         for(Object[] resultado : resultados) {
             PostulacionTimelineRespuesta dto = new PostulacionTimelineRespuesta();
-            dto.setEstado((String) resultado[0]);
 
-            Instant instant = (Instant) resultado[1];
-            ZonedDateTime zonedDateTime = instant.atZone(ZoneId.of("America/Bogota")); // o cualquier otra zona horaria, por ejemplo ZoneId.of("America/New_York")
-            dto.setFechaActualizacion(zonedDateTime.toLocalDateTime().toString());
-            dto.setColor(resultado[2].toString());
+            try {
+                dto.setEstado((String) resultado[0]);
+            } catch (ClassCastException e) {
+                logger.error("Error al castear el estado a String", e);
+                continue; // Salta esta iteración del bucle
+            }
+
+            // Casting y conversión de la fecha
+            try {
+                Instant instant = (Instant) resultado[1];
+                ZonedDateTime zonedDateTime = instant.atZone(ZoneId.of("America/Bogota"));
+                dto.setFechaActualizacion(zonedDateTime.toLocalDateTime().toString());
+            } catch (ClassCastException e) {
+                logger.error("Error al castear la fecha a Instant", e);
+                continue; // Salta esta iteración del bucle
+            } catch (NullPointerException e) {
+                logger.warn("La fecha de actualización es nula para el estado: {}", dto.getEstado());
+                continue; // Salta esta iteración del bucle
+            }
+
+            // Casting para el color
+            try {
+                dto.setColor(resultado[2].toString()); // Aquí asumimos que siempre es posible llamar toString(), pero podría necesitar un manejo similar si esperas un tipo específico
+            } catch (Exception e) {
+                logger.error("Error al obtener el color", e);
+                continue; // Salta esta iteración del bucle
+            }
 
             timelineRespuestas.add(dto);
         }
