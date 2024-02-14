@@ -50,8 +50,10 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
 
         Postulacion postulacion = new Postulacion();
 
-        LocalDateTime fechaActualizacion = ZonedDateTime.now(ZoneId.of("America/Bogota")).toLocalDateTime();
-        LocalDateTime fechaPostulacion = ZonedDateTime.now(ZoneId.of("America/Bogota")).toLocalDateTime();
+        LocalDateTime fechaActualizacion = ZonedDateTime.now(ZoneId.of("America/Bogota"))
+                .withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime();
+        LocalDateTime fechaPostulacion = ZonedDateTime.now(ZoneId.of("America/Bogota"))
+                .withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime();
 
         postulacion.setEmpresa(empresa);
         postulacion.setPuesto(puesto);
