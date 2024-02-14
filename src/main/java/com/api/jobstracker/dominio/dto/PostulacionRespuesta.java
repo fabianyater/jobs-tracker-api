@@ -18,7 +18,6 @@ public class PostulacionRespuesta {
     private String nombreEmpresa;
     private String fechaPostulacion;
     private String fechaActualizacion;
-    private List<ComentarioRespuesta> comentarios;
     private String estado;
     private String descripcion;
 

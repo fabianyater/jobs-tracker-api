@@ -95,14 +95,8 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
                     dto.setNombreEmpresa(postulacion.getEmpresa().getNombre());
                     dto.setEstado(postulacionEstados.get(postulacion.getId()));
                     dto.setFechaActualizacion(String.valueOf(fechaActualizacionEstados.get(postulacion.getId())));
-
-                    List<ComentarioRespuesta> comentariosFiltrados = comentarios.stream()
-                            .filter(comentario -> comentario.getPostulacion().getId().equals(postulacion.getId()))
-                            .map(comentario -> new ComentarioRespuesta(comentario.getComentario()))
-                            .collect(Collectors.toList());
-
-                    dto.setComentarios(comentariosFiltrados);
                     dto.setDescripcion(postulacion.getDescripcion());
+
                     return dto;
                 })
                 .sorted((p1, p2) -> p2.getFechaActualizacion().compareTo(p1.getFechaActualizacion()))
