@@ -8,9 +8,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.*;
 
 @Service
@@ -49,10 +47,9 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
 
         Postulacion postulacion = new Postulacion();
 
-        ZoneOffset bogotaOffset = ZoneOffset.ofHours(-5);
+        ZonedDateTime fechaActualizacion = ZonedDateTime.now(ZoneId.of("America/Bogota"));
+        ZonedDateTime fechaPostulacion = ZonedDateTime.now(ZoneId.of("America/Bogota"));
 
-        LocalDateTime fechaActualizacion = LocalDateTime.now(bogotaOffset);
-        LocalDateTime fechaPostulacion = LocalDateTime.now(bogotaOffset);
 
 
         postulacion.setEmpresa(empresa);
@@ -76,7 +73,7 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
         List<Postulacion> postulaciones = postulacionRepositorio.findAll();
         List<PostulacionesEstado> postulacionesEstado = postulacionEstadoRepositorio.findAll();
         Map<Integer, String> postulacionEstados = new HashMap<>();
-        Map<Integer, LocalDateTime> fechaActualizacionEstados = new HashMap<>();
+        Map<Integer, ZonedDateTime> fechaActualizacionEstados = new HashMap<>();
 
         postulacionesEstado.forEach(pe -> {
             Estado estado = estadoRepositorio.findById(pe.getEstadosEstado().getId()).orElse(null);
@@ -151,7 +148,7 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
         PostulacionesEstado postulacionesEstado = new PostulacionesEstado();
         postulacionesEstado.setPostulacionIdPostulacion(postulacion);
         postulacionesEstado.setEstadosEstado(estadoId);
-        postulacionesEstado.setFechaActualizacion(LocalDateTime.now());
+        postulacionesEstado.setFechaActualizacion(ZonedDateTime.now());
 
         postulacionEstadoRepositorio.save(postulacionesEstado);
     }
@@ -165,8 +162,9 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
             PostulacionTimelineRespuesta dto = new PostulacionTimelineRespuesta();
             dto.setEstado((String) resultado[0]);
 
-            Timestamp timestamp = (Timestamp) resultado[1];
-            dto.setFechaActualizacion(timestamp.toLocalDateTime().toString());
+            Instant instant = (Instant) resultado[1];
+            ZonedDateTime zonedDateTime = instant.atZone(ZoneId.of("America/Bogota")); // o cualquier otra zona horaria, por ejemplo ZoneId.of("America/New_York")
+            dto.setFechaActualizacion(zonedDateTime.toLocalDateTime().toString());
             dto.setColor(resultado[2].toString());
 
             timelineRespuestas.add(dto);

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -20,7 +20,7 @@ public class Comentario {
     private String comentario;
 
     @Column(name = "fecha_publicacion")
-    private LocalDateTime fechaPublicacion;
+    private ZonedDateTime fechaPublicacion;
 
     @ManyToOne
     @JoinColumn(name = "postulacion_id_postulacion")

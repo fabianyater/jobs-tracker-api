@@ -12,7 +12,8 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -29,10 +30,12 @@ public class ComentarioServicioImpl implements ComentarioServicio {
         Postulacion postulacion = postulacionRepositorio.findById(comentarioSolicitud.getPostulacionId())
                 .orElseThrow(() -> new RuntimeException("Postulación no encontrada con el id: " + comentarioSolicitud.getPostulacionId()));
 
+        ZonedDateTime fechaPublicacion = ZonedDateTime.now(ZoneId.of("America/Bogota"));
+
         Comentario comentario = new Comentario();
         comentario.setComentario(comentarioSolicitud.getComentario());
         comentario.setPostulacion(postulacion);
-        comentario.setFechaPublicacion(LocalDateTime.now());
+        comentario.setFechaPublicacion(fechaPublicacion);
 
         comentarioRepositorio.save(comentario);
 

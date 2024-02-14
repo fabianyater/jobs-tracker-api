@@ -8,6 +8,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @AllArgsConstructor
@@ -19,6 +22,14 @@ public class ComentarioControlador {
     @PostMapping
     public ResponseEntity<ApiRespuesta<ComentarioRespuesta>> agregarComentario(@RequestBody ComentarioSolicitud comentarioSolicitud) {
         ComentarioRespuesta comentarioRespuesta = comentarioServicio.agregarComentario(comentarioSolicitud);
+
+        String fecha = comentarioRespuesta.getFechaPublicacion();
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(fecha);
+        ZonedDateTime zonedDateTimeUtc = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
+        String fechaFormateada = zonedDateTimeUtc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"));
+
+        comentarioRespuesta.setFechaPublicacion(fechaFormateada);
+
         ApiRespuesta<ComentarioRespuesta> apiRespuesta = ApiRespuesta.ok(comentarioRespuesta);
 
         return new ResponseEntity<>(apiRespuesta, apiRespuesta.getStatus());

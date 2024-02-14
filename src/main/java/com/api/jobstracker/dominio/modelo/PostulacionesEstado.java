@@ -4,8 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -26,6 +25,6 @@ public class PostulacionesEstado {
     private Estado estadosEstado;
 
     @Column(name = "fecha_actualizacion")
-    private LocalDateTime fechaActualizacion;
+    private ZonedDateTime fechaActualizacion;
 
 }
