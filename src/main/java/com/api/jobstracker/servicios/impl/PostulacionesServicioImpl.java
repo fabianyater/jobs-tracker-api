@@ -54,7 +54,6 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
         ZonedDateTime fechaPostulacion = ZonedDateTime.now(ZoneId.of("America/Bogota"));
 
 
-
         postulacion.setEmpresa(empresa);
         postulacion.setPuesto(puesto);
         postulacion.setUrl(url);
@@ -86,7 +85,6 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
                 fechaActualizacionEstados.put(pe.getPostulacionIdPostulacion().getId(), pe.getFechaActualizacion());
             }
         });
-
 
 
         List<PostulacionRespuesta> postulacionRespuestas = postulaciones.stream()
@@ -172,28 +170,33 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
 
         List<PostulacionTimelineRespuesta> timelineRespuestas = new ArrayList<>();
 
-        for(Object[] resultado : resultados) {
+        for (Object[] resultado : resultados) {
             PostulacionTimelineRespuesta dto = new PostulacionTimelineRespuesta();
 
             try {
                 dto.setEstado((String) resultado[0]);
             } catch (ClassCastException e) {
                 logger.error("Error al castear el estado a String", e);
-                continue; // Salta esta iteración del bucle
+                continue;
             }
 
-            // Casting y conversión de la fecha
             try {
-                logger.info("Clase del resultado: {}", resultado[1].getClass().getName());
-                Instant instant = (Instant) resultado[1];
+                Instant instant;
+                if (resultado[1] instanceof java.sql.Timestamp timestamp) {
+                    instant = timestamp.toInstant();
+                } else if (resultado[1] instanceof Instant instant1) {
+                    instant = instant1;
+                } else {
+                    throw new IllegalArgumentException("Tipo de dato no soportado para la conversión: "
+                            + resultado[1].getClass().getName());
+                }
+
                 ZonedDateTime zonedDateTime = instant.atZone(ZoneId.of("America/Bogota"));
                 dto.setFechaActualizacion(zonedDateTime.toLocalDateTime().toString());
-            } catch (ClassCastException e) {
-                logger.error("Error al castear la fecha a Instant", e);
-                continue; // Salta esta iteración del bucle
-            } catch (NullPointerException e) {
-                logger.warn("La fecha de actualización es nula para el estado: {}", dto.getEstado());
-                continue; // Salta esta iteración del bucle
+            } catch (IllegalArgumentException e) {
+                logger.error("Error al convertir la fecha: {}", e.getMessage());
+            } catch (Exception e) {
+                logger.error("Error inesperado al procesar la fecha: ", e);
             }
 
             // Casting para el color
