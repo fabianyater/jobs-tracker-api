@@ -184,7 +184,7 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
 
             // Casting y conversión de la fecha
             try {
-                logger.info("Resultado que viene de la base de datos: {}", resultado[1]);
+                logger.info("Clase del resultado: {}", resultado[1].getClass().getName());
                 Instant instant = (Instant) resultado[1];
                 ZonedDateTime zonedDateTime = instant.atZone(ZoneId.of("America/Bogota"));
                 dto.setFechaActualizacion(zonedDateTime.toLocalDateTime().toString());
