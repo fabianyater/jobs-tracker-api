@@ -71,17 +71,17 @@ public class ApplicationBusiness implements ApplicationService {
 
     @Override
     public void deleteApplication(Integer applicationId) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void updateApplicationStatus(Integer applicationId, StatusRequest statusRequest) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<TimelineResponse> getApplicationTimeline(Integer applicationId) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     private CompanyEntity saveCompany(String name) {
