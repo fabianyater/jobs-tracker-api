@@ -5,7 +5,7 @@ spring:
   application:
     name: "Jobs Tracker API"
   profiles:
-    active: prod
+    active: test
   jpa:
     database: postgresql
     hibernate:
@@ -23,6 +23,19 @@ spring:
   config:
     activate:
       on-profile: dev
+    use-legacy-processing: true
+
+---
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/myjobs-test
+    username: postgres
+    password: postgres
+  config:
+    activate:
+      on-profile: test
     use-legacy-processing: true
 
 ---
