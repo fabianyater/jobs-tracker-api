@@ -19,7 +19,7 @@ public class Postulacion {
     @Column(name = "fecha_postulacion")
     private ZonedDateTime fechaPostulacion;
 
-    @Column(name = "url")
+    @Column(name = "url", columnDefinition = "text")
     private String url;
 
     @Column(name = "descpription", columnDefinition = "text")
