@@ -25,6 +25,9 @@ public class Postulacion {
     @Column(name = "descpription", columnDefinition = "text")
     private String descripcion;
 
+    @Column(name = "current_status")
+    private String currentStatus;
+
     @ManyToOne
     @JoinColumn(name = "puesto_id_puesto")
     private Puesto puesto;
