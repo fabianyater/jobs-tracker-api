@@ -25,8 +25,9 @@ public class PostulacionControlador {
     @GetMapping()
     public ResponseEntity<ApiRespuesta<PostulacionRespuestaPaginada>> listarTodas(
             @RequestParam(value = "page") int currentPage,
-            @RequestParam("items") int itemsPerPage) {
-        PostulacionRespuestaPaginada postulacionesPaginadas = postulacionesServicio.listarPostulaciones(currentPage, itemsPerPage);
+            @RequestParam("items") int itemsPerPage,
+            @RequestParam("estado") List<String> estados) {
+        PostulacionRespuestaPaginada postulacionesPaginadas = postulacionesServicio.listarPostulaciones(currentPage, itemsPerPage, estados);
         ApiRespuesta<PostulacionRespuestaPaginada> respuesta = ApiRespuesta.ok(postulacionesPaginadas);
         return new ResponseEntity<>(respuesta, respuesta.getStatus());
     }
