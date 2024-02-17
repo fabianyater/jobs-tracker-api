@@ -58,6 +58,7 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
         postulacion.setPuesto(puesto);
         postulacion.setUrl(url);
         postulacion.setFechaPostulacion(fechaPostulacion);
+        postulacion.setCurrentStatus(estado.getEstado());
 
         postulacionRepositorio.save(postulacion);
 
@@ -70,54 +71,24 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
     }
 
     @Override
-    public PostulacionRespuestaPaginada listarPostulaciones(int currentPage, int itemsPerPage) {
-        PostulacionRespuestaPaginada postulacionRespuestaPaginada = new PostulacionRespuestaPaginada();
+    public PostulacionRespuestaPaginada listarPostulaciones(int currentPage, int itemsPerPage, List<String> estados) {
         List<Postulacion> postulaciones = postulacionRepositorio.findAll();
         List<PostulacionesEstado> postulacionesEstado = postulacionEstadoRepositorio.findAll();
-        Map<Integer, String> postulacionEstados = new HashMap<>();
         Map<Integer, ZonedDateTime> fechaActualizacionEstados = new HashMap<>();
-
-        postulacionesEstado.forEach(pe -> {
-            Estado estado = estadoRepositorio.findById(pe.getEstadosEstado().getId()).orElse(null);
-
-            if (estado != null) {
-                postulacionEstados.put(pe.getPostulacionIdPostulacion().getId(), estado.getEstado());
-                fechaActualizacionEstados.put(pe.getPostulacionIdPostulacion().getId(), pe.getFechaActualizacion());
-            }
-        });
-
-
-        List<PostulacionRespuesta> postulacionRespuestas = postulaciones.stream()
-                .map(postulacion -> {
-                    PostulacionRespuesta dto = new PostulacionRespuesta();
-                    dto.setId(postulacion.getId());
-                    dto.setFechaPostulacion(postulacion.getFechaPostulacion().toString());
-                    dto.setUrl(postulacion.getUrl());
-                    dto.setTituloPuesto(postulacion.getPuesto().getTitulo());
-                    dto.setNombreEmpresa(postulacion.getEmpresa().getNombre());
-                    dto.setEstado(postulacionEstados.get(postulacion.getId()));
-                    dto.setFechaActualizacion(String.valueOf(fechaActualizacionEstados.get(postulacion.getId())));
-                    dto.setDescripcion(postulacion.getDescripcion());
-
-                    return dto;
-                })
-                .sorted((p1, p2) -> p2.getFechaActualizacion().compareTo(p1.getFechaActualizacion()))
-                .toList();
-
-        int totalItems = postulacionRespuestas.size();
+        int totalItems;
         int startIndex = (currentPage - 1) * itemsPerPage;
 
-        List<PostulacionRespuesta> paginatedPostulaciones = postulacionRespuestas.stream()
-                .skip(startIndex)
-                .limit(itemsPerPage)
-                .toList();
+        postulacionesEstado.forEach(pe -> estadoRepositorio
+                .findById(pe.getEstadosEstado().getId())
+                .ifPresent(e -> fechaActualizacionEstados.put(pe.getPostulacionIdPostulacion().getId(), pe.getFechaActualizacion())));
 
-        postulacionRespuestaPaginada.setCurrentPage(currentPage);
-        postulacionRespuestaPaginada.setItemsPerPage(itemsPerPage);
-        postulacionRespuestaPaginada.setTotalItems(totalItems);
-        postulacionRespuestaPaginada.setPostulaciones(paginatedPostulaciones);
+        List<PostulacionRespuesta> postulacionRespuestas = mapPostulacionesARespuesta(postulaciones, fechaActualizacionEstados, estados);
 
-        return postulacionRespuestaPaginada;
+        totalItems = postulacionRespuestas.size();
+
+        List<PostulacionRespuesta> paginatedPostulaciones = obtenerPostulacionesPaginadas(startIndex, itemsPerPage, postulacionRespuestas);
+
+        return mapearARespuestaPaginada(currentPage, itemsPerPage, totalItems, paginatedPostulaciones);
     }
 
     @Override
@@ -150,6 +121,10 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
         postulacionesEstado.setPostulacionIdPostulacion(postulacion);
         postulacionesEstado.setEstadosEstado(estadoId);
         postulacionesEstado.setFechaActualizacion(ZonedDateTime.now());
+
+        postulacion.setCurrentStatus(estadoId.getEstado());
+
+        postulacionRepositorio.save(postulacion);
 
         postulacionEstadoRepositorio.save(postulacionesEstado);
     }
@@ -214,5 +189,48 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
                 .stream()
                 .sorted((o1, o2) -> o2.getFechaActualizacion().compareTo(o1.getFechaActualizacion()))
                 .toList();
+    }
+
+    private List<PostulacionRespuesta> mapPostulacionesARespuesta(
+            List<Postulacion> postulaciones,
+            Map<Integer, ZonedDateTime> fechaActualizacionEstados,
+            List<String> estados) {
+        return postulaciones.stream()
+                .map(postulacion -> {
+                    PostulacionRespuesta dto = new PostulacionRespuesta();
+                    dto.setId(postulacion.getId());
+                    dto.setFechaPostulacion(postulacion.getFechaPostulacion().toString());
+                    dto.setUrl(postulacion.getUrl());
+                    dto.setTituloPuesto(postulacion.getPuesto().getTitulo());
+                    dto.setNombreEmpresa(postulacion.getEmpresa().getNombre());
+                    dto.setEstado(postulacion.getCurrentStatus());
+                    dto.setFechaActualizacion(String.valueOf(fechaActualizacionEstados.get(postulacion.getId())));
+                    dto.setDescripcion(postulacion.getDescripcion());
+                    dto.setEstado(postulacion.getCurrentStatus());
+
+                    return dto;
+                })
+                .sorted((p1, p2) -> p2.getFechaActualizacion().compareTo(p1.getFechaActualizacion()))
+                .filter(postulacionRespuesta -> estados.isEmpty() || estados.contains(postulacionRespuesta.getEstado()))
+                .toList();
+    }
+
+    private List<PostulacionRespuesta> obtenerPostulacionesPaginadas(int startIndex, int itemsPerPage, List<PostulacionRespuesta> postulacionRespuestas) {
+
+        return postulacionRespuestas.stream()
+                .skip(startIndex)
+                .limit(itemsPerPage)
+                .toList();
+    }
+
+    private PostulacionRespuestaPaginada mapearARespuestaPaginada(int currentPage, int itemsPerPage, int totalItems, List<PostulacionRespuesta> postulaciones) {
+        PostulacionRespuestaPaginada postulacionRespuestaPaginada = new PostulacionRespuestaPaginada();
+
+        postulacionRespuestaPaginada.setCurrentPage(currentPage);
+        postulacionRespuestaPaginada.setItemsPerPage(itemsPerPage);
+        postulacionRespuestaPaginada.setTotalItems(totalItems);
+        postulacionRespuestaPaginada.setPostulaciones(postulaciones);
+
+        return postulacionRespuestaPaginada;
     }
 }
