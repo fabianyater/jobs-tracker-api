@@ -10,7 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.time.*;
+import java.net.MalformedURLException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @Service
@@ -26,7 +29,7 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
 
 
     @Override
-    public void agregarPostulacion(PostulacionSolicitud postulacionSolicitud) {
+    public void agregarPostulacion(PostulacionSolicitud postulacionSolicitud) throws MalformedURLException {
         String nombreEmpresa = postulacionSolicitud.getNombreEmpresa();
         String nombrePuesto = postulacionSolicitud.getTituloPuesto();
         String url = postulacionSolicitud.getUrl();
@@ -59,6 +62,7 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
         postulacion.setUrl(url);
         postulacion.setFechaPostulacion(fechaPostulacion);
         postulacion.setCurrentStatus(estado.getEstado());
+        postulacion.setPlatformName(getNombreLink(url));
 
         postulacionRepositorio.save(postulacion);
 
@@ -233,5 +237,12 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
         postulacionRespuestaPaginada.setPostulaciones(postulaciones);
 
         return postulacionRespuestaPaginada;
+    }
+
+    private static String getNombreLink(String url) throws MalformedURLException {
+        String domainName = url.replace("https://", "");
+        String[] partes = domainName.split("\\.");
+        String nombre = partes.length > 1 ? partes[1] : domainName;
+        return nombre.toUpperCase().charAt(0) + nombre.substring(1).toLowerCase();
     }
 }

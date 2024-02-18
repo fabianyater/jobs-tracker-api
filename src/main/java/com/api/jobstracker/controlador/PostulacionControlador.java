@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 @AllArgsConstructor
@@ -16,7 +17,7 @@ public class PostulacionControlador {
     private final PostulacionesServicio postulacionesServicio;
 
     @PostMapping
-    public ResponseEntity<ApiRespuesta<Void>> agregarPostulacion(@RequestBody PostulacionSolicitud postulacionDTO) {
+    public ResponseEntity<ApiRespuesta<Void>> agregarPostulacion(@RequestBody PostulacionSolicitud postulacionDTO) throws MalformedURLException {
         postulacionesServicio.agregarPostulacion(postulacionDTO);
         ApiRespuesta<Void> apiRespuesta = ApiRespuesta.created();
         return new ResponseEntity<>(apiRespuesta, apiRespuesta.getStatus());
