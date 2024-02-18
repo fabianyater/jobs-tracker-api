@@ -25,6 +25,9 @@ public class Postulacion {
     @Column(name = "descpription", columnDefinition = "text")
     private String descripcion;
 
+    @Column(name = "plaftorm_name")
+    private String platformName;
+
     @Column(name = "current_status")
     private String currentStatus;
 
