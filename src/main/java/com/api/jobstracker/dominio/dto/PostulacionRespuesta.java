@@ -14,4 +14,5 @@ public class PostulacionRespuesta {
     private String fechaActualizacion;
     private String estado;
     private String descripcion;
+    private String plataforma;
 }

@@ -207,6 +207,7 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
                     dto.setFechaActualizacion(String.valueOf(fechaActualizacionEstados.get(postulacion.getId())));
                     dto.setDescripcion(postulacion.getDescripcion());
                     dto.setEstado(postulacion.getCurrentStatus());
+                    dto.setPlataforma(postulacion.getPlatformName());
 
                     return dto;
                 })
