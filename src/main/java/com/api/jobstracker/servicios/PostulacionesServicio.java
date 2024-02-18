@@ -11,4 +11,5 @@ public interface PostulacionesServicio {
     void eliminarPostulacion(Integer postulacionId);
     void actualizarEstado(Integer id, EstadoSolicitud estado);
     List<PostulacionTimelineRespuesta> obtenerPostulacionesTimeline(Integer postulacionId);
+    PostulacionRespuesta obtenerDetallePostulacion(int postulacionId);
 }

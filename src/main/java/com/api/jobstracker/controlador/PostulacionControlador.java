@@ -56,4 +56,12 @@ public class PostulacionControlador {
 
         return new ResponseEntity<>(respuesta, respuesta.getStatus());
     }
+
+    @GetMapping("/{postulacionId}")
+    public ResponseEntity<ApiRespuesta<PostulacionRespuesta>> obtenerDetallePostulacion(@PathVariable("postulacionId") int postulacionId) {
+        PostulacionRespuesta  respuesta = postulacionesServicio.obtenerDetallePostulacion(postulacionId);
+        ApiRespuesta<PostulacionRespuesta> apiRespuesta = ApiRespuesta.ok(respuesta);
+
+        return new ResponseEntity<>(apiRespuesta, apiRespuesta.getStatus());
+    }
 }

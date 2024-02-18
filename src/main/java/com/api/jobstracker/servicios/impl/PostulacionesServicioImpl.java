@@ -195,6 +195,32 @@ public class PostulacionesServicioImpl implements PostulacionesServicio {
                 .toList();
     }
 
+    @Override
+    public PostulacionRespuesta obtenerDetallePostulacion(int postulacionId) {
+        List<PostulacionesEstado> postulacionesEstado = postulacionEstadoRepositorio.findAll();
+        Map<Integer, ZonedDateTime> fechaActualizacion = new HashMap<>();
+
+        postulacionesEstado.forEach(pe -> estadoRepositorio
+                .findById(pe.getEstadosEstado().getId())
+                .ifPresent(e -> fechaActualizacion.put(pe.getPostulacionIdPostulacion().getId(), pe.getFechaActualizacion())));
+
+        return postulacionRepositorio.findById(postulacionId).map(postulacion -> {
+            PostulacionRespuesta respuesta = new PostulacionRespuesta();
+            respuesta.setId(postulacion.getId());
+            respuesta.setPlataforma(postulacion.getPlatformName());
+            respuesta.setFechaPostulacion(postulacion.getFechaPostulacion().toString());
+            respuesta.setEstado(postulacion.getCurrentStatus());
+            respuesta.setTituloPuesto(postulacion.getPuesto().getTitulo());
+            respuesta.setNombreEmpresa(postulacion.getEmpresa().getNombre());
+            respuesta.setUrl(postulacion.getUrl());
+
+            return respuesta;
+        }).orElseThrow(() -> {
+            logger.error("No se encontró la postulación con ID: {}", postulacionId);
+            return new RuntimeException("No se encontró la postulación");
+        });
+    }
+
     private List<PostulacionRespuesta> mapPostulacionesARespuesta(
             List<Postulacion> postulaciones,
             Map<Integer, ZonedDateTime> fechaActualizacionEstados,
